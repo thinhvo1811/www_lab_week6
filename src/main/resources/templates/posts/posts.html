@@ -44,7 +44,7 @@
                     <td th:text="${post.title}"></td>
                     <td th:text="${post.user.lastName}+' '+${post.user.middleName}+' '+${post.user.firstName}"></td>
                     <td th:text="${#temporals.format(post.createdAt, ' HH:mm dd-MM-yyyy')}"></td>
-                    <td><a th:href="@{/jobs/detail/{id}(id=${post.id})}">Detail</a></td>
+                    <td><a th:href="@{/posts/detail/{id}(id=${post.id})}">Detail</a></td>
                 </tr>
                 </tbody>
             </table>
