@@ -30,7 +30,7 @@ public class PostComment {
     private LocalDateTime publishedAt;
     @Column(length = 5000)
     private String content;
-    @OneToMany(mappedBy = "postComment")
+    @OneToMany(mappedBy = "postComment", cascade = CascadeType.ALL)
     List<PostComment> postComments;
 
     public PostComment() {

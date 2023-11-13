@@ -40,8 +40,8 @@ public class PostCommentController {
         int currentPage = page.orElse(1);
         int pageSize = size.orElse(5);
 
-        Page<PostComment> commentPage2 = postCommentService.findByPostCommentId(currentPage - 1, pageSize, id);
         User user = (User) session.getAttribute("user-account");
+        Page<PostComment> commentPage2 = postCommentService.findByPostCommentId(currentPage - 1, pageSize, id, user.getId());
         modelAndView.addObject("commentPage2", commentPage2);
         modelAndView.addObject("commentID", id);
         modelAndView.addObject("postID", postID);
@@ -113,8 +113,16 @@ public class PostCommentController {
 
     ){
         ModelAndView modelAndView = new ModelAndView();
+        PostComment parentPostComment = postCommentRepository.findById(commentID).get().getPostComment();
+        if(parentPostComment==null){
+            modelAndView.setViewName("redirect:/posts/detail/"+postID);
+        }
+        else {
+            modelAndView.setViewName("redirect:/posts/comments/child-comments/"+parentPostComment.getId()+"?postID="+postID);
+        }
+
         postCommentRepository.deleteById(commentID);
-        modelAndView.setViewName("redirect:/posts/detail/"+postID);
+
         return modelAndView;
     }
 
@@ -138,12 +146,19 @@ public class PostCommentController {
             @RequestParam("commentID") long commentID
     ){
         ModelAndView modelAndView = new ModelAndView();
+
         PostComment postComment1 = postCommentRepository.findById(commentID).get();
         postComment1.setTitle(postComment.getTitle());
         postComment1.setContent(postComment.getContent());
         postComment1.setPublished(postComment.isPublished());
         postCommentRepository.save(postComment1);
-        modelAndView.setViewName("redirect:/posts/detail/"+postID);
+
+        if(postComment1.getPostComment()==null){
+            modelAndView.setViewName("redirect:/posts/detail/"+postID);
+        }
+        else {
+            modelAndView.setViewName("redirect:/posts/comments/child-comments/"+postComment1.getPostComment().getId()+"?postID="+postID);
+        }
         return modelAndView;
     }
 }

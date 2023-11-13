@@ -60,11 +60,11 @@ public class PostController {
         int currentPage = page.orElse(1);
         int pageSize = size.orElse(5);
 
-        Page<PostComment> commentPage = postCommentService.findByPostId(currentPage - 1, pageSize, id);
+        User user = (User) session.getAttribute("user-account");
+        Page<PostComment> commentPage = postCommentService.findByPostId(currentPage - 1, pageSize, id, user.getId());
         ModelAndView modelAndView = new ModelAndView();
         Post post = postRepository.findById(id).get();
         PostComment postComment = new PostComment();
-        User user = (User) session.getAttribute("user-account");
         modelAndView.addObject("post", post);
         modelAndView.addObject("postComment", postComment);
         modelAndView.addObject("commentPage", commentPage);

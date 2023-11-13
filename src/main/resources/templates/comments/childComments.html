@@ -47,8 +47,8 @@
                     <td th:text="${#temporals.format(comment.createdAt, ' HH:mm dd-MM-yyyy')}"></td>
                     <td><a th:href="@{/posts/comments/child-comments/{id}(id=${comment.id}, postID=${postID})}"  th:if="${comment.postComments.size()!=0}">Xem thêm bình luận</a></td>
                     <td><a th:href="@{/posts/comments/show-form-add-child-comment(commendID=${comment.id}, postID=${postID})}">Trả lời</a></td>
-                    <td><a th:href="@{/posts/comments/child-comments/{id}(id=${comment.id}, postID=${postID})}"  th:if="${comment.user.id==user.id}">Sửa</a></td>
-                    <td><a th:href="@{/posts/comments/show-form-add-child-comment(commendID=${comment.id}, postID=${postID})}" th:if="${comment.user.id==user.id}">Xóa</a></td>
+                    <td><a th:href="@{/posts/show-form-update-comment(commentID=${comment.id}, postID=${postID})}"  th:if="${comment.user.id==user.id}">Sửa</a></td>
+                    <td><a th:href="@{/posts/delete-comment(commentID=${comment.id}, postID=${postID})}" th:if="${comment.user.id==user.id}">Xóa</a></td>
                 </tr>
                 </tbody>
             </table>

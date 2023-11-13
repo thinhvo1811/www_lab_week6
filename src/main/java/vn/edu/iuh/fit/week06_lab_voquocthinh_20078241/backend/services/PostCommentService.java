@@ -16,10 +16,10 @@ public class PostCommentService {
     @Autowired
     private PostCommentRepository postCommentRepository;
 
-    public Page<PostComment> findByPostId(int pageNo, int pageSize, long id) {
+    public Page<PostComment> findByPostId(int pageNo, int pageSize, long id, long userID) {
         int startItem = pageNo * pageSize;
         List<PostComment> list;
-        List<PostComment> postComments = postCommentRepository.findByPost_IdAndPostCommentIsNull(id);
+        List<PostComment> postComments = postCommentRepository.findByPost_IdAndPostCommentIsNull(id, userID);
 
         if (postComments.size() < startItem) {
             list = Collections.emptyList();
@@ -34,10 +34,10 @@ public class PostCommentService {
         return commentPage;
     }
 
-    public Page<PostComment> findByPostCommentId(int pageNo, int pageSize, long id) {
+    public Page<PostComment> findByPostCommentId(int pageNo, int pageSize, long id, long userID) {
         int startItem = pageNo * pageSize;
         List<PostComment> list;
-        List<PostComment> postComments = postCommentRepository.findByPostComment_Id(id);
+        List<PostComment> postComments = postCommentRepository.findByPostComment_Id(id, userID);
 
         if (postComments.size() < startItem) {
             list = Collections.emptyList();
