@@ -1,5 +1,6 @@
 package vn.edu.iuh.fit.week06_lab_voquocthinh_20078241.frontend.controllers;
 
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import vn.edu.iuh.fit.week06_lab_voquocthinh_20078241.backend.models.Post;
 import vn.edu.iuh.fit.week06_lab_voquocthinh_20078241.backend.models.PostComment;
+import vn.edu.iuh.fit.week06_lab_voquocthinh_20078241.backend.models.User;
 import vn.edu.iuh.fit.week06_lab_voquocthinh_20078241.backend.repositories.PostRepository;
 import vn.edu.iuh.fit.week06_lab_voquocthinh_20078241.backend.services.PostCommentService;
 import vn.edu.iuh.fit.week06_lab_voquocthinh_20078241.backend.services.PostService;
@@ -51,9 +53,10 @@ public class PostController {
 
     @GetMapping("/posts/detail/{id}")
     public ModelAndView showPostDetail(
-                            @PathVariable("id") long id,
-                            @RequestParam("page") Optional<Integer> page,
-                            @RequestParam("size") Optional<Integer> size){
+            @PathVariable("id") long id,
+            @RequestParam("page") Optional<Integer> page,
+            @RequestParam("size") Optional<Integer> size,
+            HttpSession session){
         int currentPage = page.orElse(1);
         int pageSize = size.orElse(5);
 
@@ -61,9 +64,11 @@ public class PostController {
         ModelAndView modelAndView = new ModelAndView();
         Post post = postRepository.findById(id).get();
         PostComment postComment = new PostComment();
+        User user = (User) session.getAttribute("user-account");
         modelAndView.addObject("post", post);
         modelAndView.addObject("postComment", postComment);
         modelAndView.addObject("commentPage", commentPage);
+        modelAndView.addObject("user", user);
         int totalPage = commentPage.getTotalPages();
         if (totalPage > 0){
             List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPage)

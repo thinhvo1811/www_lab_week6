@@ -33,16 +33,19 @@ public class PostCommentController {
                             @PathVariable("id") long id,
                             @RequestParam("postID") long postID,
                             @RequestParam("page") Optional<Integer> page,
-                            @RequestParam("size") Optional<Integer> size){
+                            @RequestParam("size") Optional<Integer> size,
+                            HttpSession session){
         ModelAndView modelAndView = new ModelAndView();
 
         int currentPage = page.orElse(1);
         int pageSize = size.orElse(5);
 
         Page<PostComment> commentPage2 = postCommentService.findByPostCommentId(currentPage - 1, pageSize, id);
+        User user = (User) session.getAttribute("user-account");
         modelAndView.addObject("commentPage2", commentPage2);
         modelAndView.addObject("commentID", id);
         modelAndView.addObject("postID", postID);
+        modelAndView.addObject("user", user);
         int totalPage = commentPage2.getTotalPages();
         if (totalPage > 0){
             List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPage)
@@ -63,6 +66,7 @@ public class PostCommentController {
         ModelAndView modelAndView = new ModelAndView();
         postComment.setUser((User) session.getAttribute("user-account"));
         postComment.setCreatedAt(LocalDateTime.now());
+        postComment.setPublishedAt(LocalDateTime.now());
         postComment.setPublished(true);
         postComment.setPost(postRepository.findById(postID).get());
         postCommentRepository.save(postComment);
@@ -89,8 +93,7 @@ public class PostCommentController {
             @ModelAttribute("postComment1") PostComment postComment,
             @RequestParam("postID") long postID,
             @RequestParam("commentID") long commentID,
-            HttpSession session,
-            HttpServletRequest request
+            HttpSession session
     ){
         ModelAndView modelAndView = new ModelAndView();
         postComment.setUser((User) session.getAttribute("user-account"));
@@ -100,6 +103,47 @@ public class PostCommentController {
         postComment.setPostComment(postCommentRepository.findById(commentID).get());
         postCommentRepository.save(postComment);
         modelAndView.setViewName("redirect:/posts/comments/child-comments/"+commentID+"?postID="+postID);
+        return modelAndView;
+    }
+
+    @GetMapping("/posts/delete-comment")
+    public ModelAndView deleteComment(
+            @RequestParam("commentID") long commentID,
+            @RequestParam("postID") long postID
+
+    ){
+        ModelAndView modelAndView = new ModelAndView();
+        postCommentRepository.deleteById(commentID);
+        modelAndView.setViewName("redirect:/posts/detail/"+postID);
+        return modelAndView;
+    }
+
+    @GetMapping("/posts/show-form-update-comment")
+    public ModelAndView showFormUpdateComment(
+            @RequestParam("commentID") long commentID,
+            @RequestParam("postID") long postID
+    ){
+        ModelAndView modelAndView = new ModelAndView();
+        PostComment postComment = postCommentRepository.findById(commentID).get();
+        modelAndView.addObject("postComment",postComment);
+        modelAndView.addObject("postID",postID);
+        modelAndView.setViewName("comments/showFormUpdateComment");
+        return modelAndView;
+    }
+
+    @PostMapping("/posts/update-comment")
+    public ModelAndView updateComment(
+            @ModelAttribute("postComment") PostComment postComment,
+            @RequestParam("postID") long postID,
+            @RequestParam("commentID") long commentID
+    ){
+        ModelAndView modelAndView = new ModelAndView();
+        PostComment postComment1 = postCommentRepository.findById(commentID).get();
+        postComment1.setTitle(postComment.getTitle());
+        postComment1.setContent(postComment.getContent());
+        postComment1.setPublished(postComment.isPublished());
+        postCommentRepository.save(postComment1);
+        modelAndView.setViewName("redirect:/posts/detail/"+postID);
         return modelAndView;
     }
 }

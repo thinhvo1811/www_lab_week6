@@ -19,7 +19,7 @@ public class PostCommentService {
     public Page<PostComment> findByPostId(int pageNo, int pageSize, long id) {
         int startItem = pageNo * pageSize;
         List<PostComment> list;
-        List<PostComment> postComments = postCommentRepository.findByPost_Id(id);
+        List<PostComment> postComments = postCommentRepository.findByPost_IdAndPostCommentIsNull(id);
 
         if (postComments.size() < startItem) {
             list = Collections.emptyList();
