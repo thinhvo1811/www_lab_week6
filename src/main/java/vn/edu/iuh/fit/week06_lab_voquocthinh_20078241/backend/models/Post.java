@@ -33,9 +33,9 @@ public class Post {
     private LocalDateTime publishedAt;
     @Column(length = 5000)
     private String content;
-    @OneToMany(mappedBy = "post")
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<PostComment> postComments;
-    @OneToMany(mappedBy = "post")
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<Post> posts;
 
     public Post() {

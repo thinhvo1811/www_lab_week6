@@ -33,11 +33,13 @@ public class PostController {
     @GetMapping("/posts")
     public String showPostListPaging(Model model,
                                      @RequestParam("page") Optional<Integer> page,
-                                     @RequestParam("size") Optional<Integer> size) {
+                                     @RequestParam("size") Optional<Integer> size,
+                                     HttpSession session) {
         int currentPage = page.orElse(1);
         int pageSize = size.orElse(10);
 
-        Page<Post> postPage = postService.findAll(currentPage - 1, pageSize, "id", "asc");
+        User user = (User) session.getAttribute("user-account");
+        Page<Post> postPage = postService.findByPublishedIsTrue(currentPage - 1, pageSize, user.getId());
 
         model.addAttribute("postPage", postPage);
         int totalPage = postPage.getTotalPages();
@@ -77,6 +79,71 @@ public class PostController {
             modelAndView.addObject("pageNumbers", pageNumbers);
         }
         modelAndView.setViewName("posts/postDetail");
+        return modelAndView;
+    }
+
+    @GetMapping("/users/my-posts")
+    public ModelAndView showMyPosts(
+            @RequestParam("page") Optional<Integer> page,
+            @RequestParam("size") Optional<Integer> size,
+            HttpSession session){
+        ModelAndView modelAndView = new ModelAndView();
+
+        int currentPage = page.orElse(1);
+        int pageSize = size.orElse(5);
+
+        User user = (User) session.getAttribute("user-account");
+        Page<Post> postPage = postService.findByUser(currentPage - 1, pageSize, user);
+        modelAndView.addObject("postPage", postPage);
+        int totalPage = postPage.getTotalPages();
+        if (totalPage > 0){
+            List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPage)
+                    .boxed()
+                    .collect(Collectors.toList());
+            modelAndView.addObject("pageNumbers", pageNumbers);
+        }
+        modelAndView.setViewName("posts/myPosts");
+        return modelAndView;
+    }
+
+    @GetMapping("/users/my-posts/delete")
+    public ModelAndView deleteComment(
+            @RequestParam("id") long postID
+    ){
+        ModelAndView modelAndView = new ModelAndView();
+        Post parentPost = postRepository.findById(postID).get().getPost();
+        if(parentPost==null){
+            modelAndView.setViewName("redirect:/users/my-posts");
+        }
+        else {
+            modelAndView.setViewName("redirect:/users/my-posts/related-posts?id="+parentPost.getId());
+        }
+        postRepository.deleteById(postID);
+
+        return modelAndView;
+    }
+
+    @GetMapping("/users/my-posts/related-posts")
+    public ModelAndView showRelatedPosts(
+            @RequestParam("page") Optional<Integer> page,
+            @RequestParam("size") Optional<Integer> size,
+            @RequestParam("id") long id){
+        ModelAndView modelAndView = new ModelAndView();
+
+        int currentPage = page.orElse(1);
+        int pageSize = size.orElse(5);
+
+        Page<Post> postPage = postService.findByPostID(currentPage - 1, pageSize, id);
+        modelAndView.addObject("postPage", postPage);
+        modelAndView.addObject("postID", id);
+        int totalPage = postPage.getTotalPages();
+        if (totalPage > 0){
+            List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPage)
+                    .boxed()
+                    .collect(Collectors.toList());
+            modelAndView.addObject("pageNumbers", pageNumbers);
+        }
+        modelAndView.setViewName("posts/relatedPosts");
         return modelAndView;
     }
 }
