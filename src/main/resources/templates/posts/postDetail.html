@@ -42,9 +42,13 @@
                 <h4 class="mt-4">Bài viết liên quan:</h4>
                 <a th:each="post : ${post.posts}" th:text="${post.metaTitle}" th:href="@{/posts/detail/{id}(id=${post.id})}"></a>
 
-                <form class="mt-5" th:object="${postComment}" th:action="@{/posts/add-comment}" method="post">
+                <form class="mt-5" th:object="${postComment}" th:action="@{/posts/add-comment(postID=${post.id})}" method="post">
+                    <div class="form-outline mb-1">
+                        <label class="form-label" for="title">Tiêu đề bình luận:</label>
+                        <input type="text" id="title" class="form-control" th:field="*{title}"/>
+                    </div>
                     <div class="form-outline mb-3">
-                        <label class="form-label" for="comment">Bình luận:</label>
+                        <label class="form-label" for="comment">Nội dung bình luận:</label>
                         <textarea id="comment" class="form-control" th:field="*{content}"></textarea>
                     </div>
 
@@ -58,6 +62,7 @@
                 <table class="mx-3 table table-striped table-hover">
                     <thead>
                     <tr>
+                        <th scope="col">Title</th>
                         <th scope="col">Content</th>
                         <th scope="col">User</th>
                         <th scope="col">Created At</th>
@@ -67,11 +72,12 @@
                     </thead>
                     <tbody>
                     <tr th:each="comment , iStat: ${commentPage.content}">
+                        <td th:text="${comment.title}"></td>
                         <td th:text="${comment.content}"></td>
                         <td th:text="${comment.user.lastName}+' '+${comment.user.middleName}+' '+${comment.user.firstName}"></td>
                         <td th:text="${#temporals.format(comment.createdAt, ' HH:mm dd-MM-yyyy')}"></td>
-                        <td><a href=""  th:if="${comment.postComments.size()!=0}">Xem thêm bình luận</a></td>
-                        <td><a href="">Trả lời</a></td>
+                        <td><a th:href="@{/posts/comments/child-comments/{id}(id=${comment.id}, postID=${post.id})}"  th:if="${comment.postComments.size()!=0}">Xem thêm bình luận</a></td>
+                        <td><a th:href="@{/posts/comments/show-form-add-child-comment(commendID=${comment.id}, postID=${post.id})}">Trả lời</a></td>
                     </tr>
                     </tbody>
                 </table>
