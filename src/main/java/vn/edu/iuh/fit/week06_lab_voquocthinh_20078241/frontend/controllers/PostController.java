@@ -5,9 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import vn.edu.iuh.fit.week06_lab_voquocthinh_20078241.backend.models.Post;
 import vn.edu.iuh.fit.week06_lab_voquocthinh_20078241.backend.models.PostComment;
@@ -16,6 +14,7 @@ import vn.edu.iuh.fit.week06_lab_voquocthinh_20078241.backend.repositories.PostR
 import vn.edu.iuh.fit.week06_lab_voquocthinh_20078241.backend.services.PostCommentService;
 import vn.edu.iuh.fit.week06_lab_voquocthinh_20078241.backend.services.PostService;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -144,6 +143,62 @@ public class PostController {
             modelAndView.addObject("pageNumbers", pageNumbers);
         }
         modelAndView.setViewName("posts/relatedPosts");
+        return modelAndView;
+    }
+
+    @GetMapping("/users/show-form-add-post")
+    public ModelAndView showFormAddPost(
+    ){
+        ModelAndView modelAndView = new ModelAndView();
+        Post post = new Post();
+        modelAndView.addObject("post",post);
+        modelAndView.setViewName("posts/showFormAddPost");
+        return modelAndView;
+    }
+
+    @PostMapping("/users/add-post")
+    public ModelAndView addPost(
+            @ModelAttribute("post") Post post,
+            HttpSession session
+    ){
+        ModelAndView modelAndView = new ModelAndView();
+        User user = (User) session.getAttribute("user-account");
+        post.setUser(user);
+        post.setPublished(true);
+        post.setPublishedAt(LocalDateTime.now());
+        post.setCreatedAt(LocalDateTime.now());
+        postRepository.save(post);
+        modelAndView.setViewName("redirect:/users/my-posts");
+        return modelAndView;
+    }
+
+    @GetMapping("/users/my-posts/show-form-add-related-post")
+    public ModelAndView showFormAddPost(
+            @RequestParam("id") long postID
+    ){
+        ModelAndView modelAndView = new ModelAndView();
+        Post post = new Post();
+        modelAndView.addObject("post",post);
+        modelAndView.addObject("postID",postID);
+        modelAndView.setViewName("posts/showFormAddRelatedPost");
+        return modelAndView;
+    }
+
+    @PostMapping("/users/my-posts/add-related-post")
+    public ModelAndView addRelatedPost(
+            @ModelAttribute("post") Post post,
+            @RequestParam("postID") long postID,
+            HttpSession session
+    ){
+        ModelAndView modelAndView = new ModelAndView();
+        User user = (User) session.getAttribute("user-account");
+        post.setUser(user);
+        post.setPost(postRepository.findById(postID).get());
+        post.setPublished(true);
+        post.setPublishedAt(LocalDateTime.now());
+        post.setCreatedAt(LocalDateTime.now());
+        postRepository.save(post);
+        modelAndView.setViewName("redirect:/users/my-posts/related-posts?id="+postID);
         return modelAndView;
     }
 }

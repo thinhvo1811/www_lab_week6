@@ -19,7 +19,7 @@
             <ul class="dropdown-menu">
                 <li><a class="dropdown-item" th:href="@{/users/info}">My Information</a></li>
                 <li><a class="dropdown-item" th:href="@{/changePassword}">Change Password</a></li>
-                <li><a class="dropdown-item" th:href="@{/users/write-post}">Write Post</a></li>
+                <li><a class="dropdown-item" th:href="@{/users/show-form-add-post}">Write Post</a></li>
                 <li><a class="dropdown-item  active" aria-current="page"  href="">My Posts</a></li>
                 <li><a class="dropdown-item" th:href="@{/logout}">Logout</a></li>
             </ul>
@@ -45,7 +45,7 @@
                     <td><a th:href="@{/posts/detail/{id}(id=${post.id})}">Chi tiết</a></td>
                     <td><a th:href="@{/posts/detail/{id}(id=${post.id})}">Sửa</a></td>
                     <td><a th:href="@{/users/my-posts/delete(id=${post.id})}">Xóa</a></td>
-                    <td><a th:href="@{/users/my-posts/delete(id=${post.id})}">Thêm bài viết liên quan</a></td>
+                    <td><a th:href="@{/users/my-posts/show-form-add-related-post(id=${post.id})}">Thêm bài viết liên quan</a></td>
                     <td><a th:href="@{/users/my-posts/related-posts(id=${post.id})}" th:if="${post.posts.size()!=0}">Danh sách bài viết liên quan</a></td>
                 </tr>
                 </tbody>
