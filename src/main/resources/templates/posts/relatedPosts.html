@@ -43,9 +43,9 @@
                     <td th:text="${post.title}"></td>
                     <td th:text="${#temporals.format(post.createdAt, ' HH:mm dd-MM-yyyy')}"></td>
                     <td><a th:href="@{/posts/detail/{id}(id=${post.id})}">Chi tiết</a></td>
-                    <td><a th:href="@{/posts/detail/{id}(id=${post.id})}">Sửa</a></td>
+                    <td><a th:href="@{/users/my-posts/show-form-update-post(id=${post.id})}">Sửa</a></td>
                     <td><a th:href="@{/users/my-posts/delete(id=${post.id})}">Xóa</a></td>
-                    <td><a th:href="@{/users/my-posts/delete(id=${post.id})}">Thêm bài viết liên quan</a></td>
+                    <td><a th:href="@{/users/my-posts/show-form-add-related-post(id=${post.id})}">Thêm bài viết liên quan</a></td>
                     <td><a th:href="@{/users/my-posts/related-posts(id=${post.id})}"  th:if="${post.posts.size()!=0}">Danh sách bài viết liên quan</a></td>
                 </tr>
                 </tbody>

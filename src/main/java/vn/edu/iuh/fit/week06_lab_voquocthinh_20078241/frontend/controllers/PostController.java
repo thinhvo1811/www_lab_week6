@@ -173,7 +173,7 @@ public class PostController {
     }
 
     @GetMapping("/users/my-posts/show-form-add-related-post")
-    public ModelAndView showFormAddPost(
+    public ModelAndView showFormAddRelatedPost(
             @RequestParam("id") long postID
     ){
         ModelAndView modelAndView = new ModelAndView();
@@ -199,6 +199,40 @@ public class PostController {
         post.setCreatedAt(LocalDateTime.now());
         postRepository.save(post);
         modelAndView.setViewName("redirect:/users/my-posts/related-posts?id="+postID);
+        return modelAndView;
+    }
+
+    @GetMapping("/users/my-posts/show-form-update-post")
+    public ModelAndView showFormUpdatePost(
+            @RequestParam("id") long postID
+    ){
+        ModelAndView modelAndView = new ModelAndView();
+        Post post = postRepository.findById(postID).get();
+        modelAndView.addObject("post",post);
+        modelAndView.setViewName("posts/showFormUpdatePost");
+        return modelAndView;
+    }
+
+    @PostMapping("/users/my-posts/update-post")
+    public ModelAndView updatePost(
+            @ModelAttribute("post") Post post,
+            @RequestParam("postID") long postID
+    ){
+        ModelAndView modelAndView = new ModelAndView();
+        Post post1 = postRepository.findById(postID).get();
+        post1.setTitle(post.getTitle());
+        post1.setMetaTitle(post.getMetaTitle());
+        post1.setSummary(post.getSummary());
+        post1.setContent(post.getContent());
+        post1.setPublished(post.isPublished());
+        post1.setUpdatedAt(LocalDateTime.now());
+        postRepository.save(post1);
+        if(post1.getPost()==null){
+            modelAndView.setViewName("redirect:/users/my-posts");
+        }
+        else {
+            modelAndView.setViewName("redirect:/users/my-posts/related-posts?id="+post1.getPost().getId());
+        }
         return modelAndView;
     }
 }
