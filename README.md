@@ -16,7 +16,9 @@
 <img src="img/Screenshot 2023-11-19 091425.png"/>
 2. Chức năng đăng ký
 <p></p>
-- ✍ Giao diện trang đăng ký. Khi đăng ký thành công sẽ quay lại trang đăng nhập cho người dùng đăng nhập
+- ✍ Giao diện trang đăng ký. Riêng mật khẩu sẽ được băm trước khi lưu vào cơ sở dữ liệu
+<p></p>
+- ✍ Khi đăng ký thành công sẽ quay lại trang đăng nhập cho người dùng đăng nhập
 <p></p>
 <img src="img/Screenshot 2023-11-19 091655.png"/>
 3. Chức năng hiển thị và cập nhật thông tin người dùng
